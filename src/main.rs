@@ -24,7 +24,7 @@ impl Mapping {
         Mapping::sort(m);
         for line in m.iter() {
             if(std::ops::Range { start: line.uid, end: line.uid+line.count}.contains(&container_uid)) {
-                let remaining_cap = (line.uid+line.count).saturating_sub(container_uid);
+                let remaining_cap = (line.uid+line.count) - container_uid;
                 
                 let k = cmp::min(remaining_cap, amount);
                 
