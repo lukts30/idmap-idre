@@ -20,7 +20,7 @@ impl Mapping {
         m.sort_by(|a,b| a.uid.cmp(&b.uid));
     }
 
-    fn process(m: &mut [Mapping],mut container_uid: u32,mut on_disk_uid: u32,mut amount: u32) {
+    fn print_idmapped(m: &mut [Mapping],mut container_uid: u32,mut on_disk_uid: u32,mut amount: u32) {
         Mapping::sort(m);
         for line in m.iter() {
             if(std::ops::Range { start: line.uid, end: line.uid+line.count}.contains(&container_uid)) {
@@ -28,7 +28,8 @@ impl Mapping {
                 
                 let k = cmp::min(remaining_cap, amount);
                 
-                println!("{} {} {}",on_disk_uid,line.loweruid-line.uid+container_uid,k);
+                println!("{} {} {}",on_disk_uid,container_uid,k);
+                //host: println!("{} {} {}",on_disk_uid,line.loweruid-line.uid+container_uid,k);
                 on_disk_uid = on_disk_uid + k;
                 container_uid = container_uid + k;
                 amount = amount - k;
@@ -55,19 +56,19 @@ fn main() -> Result<(), Box<dyn Error>> {
         },
     };
 
-    let mut v = helper(&map);
+    let mut v = read_filecontent_to_vec(&map);
     let a = (args.len()-2) / 3;
     let mut k = 2;
     for i in 0..a {
-        dbg!(i);
-        Mapping::process(&mut v, args[k].parse()?, args[k+1].parse()?, args[k+2].parse()?);
+        // dbg!(i);
+        Mapping::print_idmapped(&mut v, args[k].parse()?, args[k+1].parse()?, args[k+2].parse()?);
         k = k+3;
     }
 
     Ok(())
 }
 
-fn helper(input: &str) -> Vec<Mapping>{
+fn read_filecontent_to_vec(input: &str) -> Vec<Mapping>{
     let mut v = Vec::new();
     for lines in input.lines() {
         let mut num: [u32;3] = [0;3];
